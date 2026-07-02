@@ -8,8 +8,8 @@
 ### 2. What are the steps to apply key rotation? (high level description)
 
 1. Se generará un nuevo set de llaves en nuestro HSM
-2. El nuevo set de llaves (key material) se encriptará (wrap) utilizando el public key provisto por AWS KMS y se subirá a AWS KSM de modo seguro.
-3. Para las bases de datos (RDS) y volumenes EBS se generará un snapshot - se copiará dicho snapshot, especificando la nueva llave KSM a utilizar durante el proceso de copiado/re-encriptado.
+2. El nuevo set de llaves (key material) se encriptará (wrap) utilizando el public key provisto por AWS KMS y se subirá a AWS KMS de modo seguro.
+3. Para las bases de datos (RDS) y volumenes EBS se generará un snapshot - se copiará dicho snapshot, especificando la nueva llave KMS a utilizar durante el proceso de copiado/re-encriptado.
 4. Para los buckets S3 se pueden reencriptar los archivos usando un S3 Batch Operation – lo cual permitiria monitorear el proceso de copiado/reencriptado en tiempo real:
 <https://docs.aws.amazon.com/AmazonS3/latest/userguide/batch-ops-create-job.html>.
 Alternativamente se puede utilizar un módulo de Terraform que permita ejecutar comandos shell e invocar la AWS CLI desde ahí. E.g.:
@@ -31,7 +31,7 @@ Nuestra Lambda Function correrá de modo periódico (e.g. una vez/hora o una vez
 
 Como menciono arriba (punto 2.2), hacemos lo recomendado por AWS:
 1. Preparamos nuestras llaves en nusetro HSM – aseguramos que nuestras llaves se encuentran guardadas de modo seguro y bien respaldadas.
-2. Encriptamos nuestras llaves (key-material) usando la public key proporcionada por AWS KSM
+2. Encriptamos nuestras llaves (key-material) usando la public key proporcionada por AWS KMS
 3. Importamos nuestro key-material pre-encriptado en AWS (mediante la CLI o la management console)
 4. Debido a que utilizamos nuestras propias llaves (BYOK), AWS no efectuará la rotación de llaves de modo automático, sino que seremos responsables de efectuarlas nosotros mismos. Sugeriría la creación de un script que ejecute los puntos a, b y c mencionados arriba de modo automático y seguro. Esto hará que el proceso sea más sencillo y estandarizado.
 
